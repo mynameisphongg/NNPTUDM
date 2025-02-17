@@ -1,9 +1,3 @@
-//HỌ VÀ TÊN: NGUYỄN NGỌC PHONG
-//MSSV: 2180605077
-
-
-
-
 class Student {
     constructor(name, age, score1, score2) {
         this.name = name;
@@ -34,28 +28,50 @@ const students = [
     new Student("Nguyễn Thiện Nhân", 18, 9, 9.5)
 ];
 
-// 1. Sử dụng map để in ra xếp loại của từng sinh viên
-students.map(student => {
-    console.log(`${student.name} - Xếp loại: ${student.getClassification()}`);
-});
-
-// 2. Sử dụng reduce để tính TBC điểm của lớp
-const averageClassScore = students.reduce((acc, student) => acc + student.getAverage(), 0) / students.length;
-console.log(`Điểm trung bình của lớp: ${averageClassScore.toFixed(2)}`);
-
-// 3. Sử dụng some để kiểm tra xem có sinh viên nào dưới 18 hay không
-const hasUnder18 = students.some(student => student.age < 18);
-console.log(`Có sinh viên dưới 18 tuổi không? ${hasUnder18 ? "Có" : "Không"}`);
-
-// 4. Hiển thị danh sách sinh viên dưới 18 tuổi
-const under18Students = students.filter(student => student.age < 18);
-if (under18Students.length > 0) {
-    console.log("Sinh viên dưới 18 tuổi:");
-    under18Students.forEach(student => console.log(`- ${student.name}`));
-} else {
-    console.log("Không có sinh viên nào dưới 18 tuổi.");
+function getRandomNumber() {
+    return Math.floor(Math.random() * 11);
 }
 
-// 5. Sử dụng every để kiểm tra cả lớp có đầy đủ tên hay không
-const allHaveNames = students.every(student => student.name.trim().length > 0);
-console.log(`Tất cả sinh viên có đầy đủ tên không? ${allHaveNames ? "Có" : "Không"}`);
+function createPromise(delay, promiseName) {
+    return new Promise((resolve, reject) => {
+        console.log(`${promiseName} đang chạy, chờ ${delay / 1000} giây...`);
+        setTimeout(() => {
+            const randomNumber = getRandomNumber(); // Lấy số ngẫu nhiên mới cho mỗi promise
+            console.log(`${promiseName} tạo số ngẫu nhiên: ${randomNumber}`);
+            
+            if (randomNumber % 2 === 0) {
+                console.log(`${promiseName} hoàn thành, trả về sinh viên:`);
+                console.log(students[0]);
+                resolve(students[0]); // Trả về một đối tượng student
+            } else {
+                console.log(`${promiseName} thất bại: Dữ liệu lỗi`);
+                reject(new Error(`${promiseName} thất bại: Dữ liệu lỗi`));
+            }
+        }, delay);
+    });
+}
+
+const promise1 = createPromise(2000, "Promise 1");
+const promise2 = createPromise(4000, "Promise 2");
+
+// Sử dụng Promise.all với xử lý lỗi
+Promise.all([promise1, promise2])
+    .then(results => {
+        console.log("\n✅ Cả hai promise đã hoàn thành! Dữ liệu lấy được:");
+        console.log(results);
+        console.log("Lấy dữ liệu hoàn thành!\n");
+    })
+    .catch(error => {
+        console.error("\n❌ Lỗi trong Promise.all:", error.message);
+    });
+
+// Sử dụng Promise.race với xử lý lỗi
+Promise.race([promise1, promise2])
+    .then(result => {
+        console.log("\n🏆 Promise nhanh nhất hoàn thành! Dữ liệu lấy được:");
+        console.log(result);
+        console.log("Đã lấy được dữ liệu!\n");
+    })
+    .catch(error => {
+        console.error("\n⚠️ Lỗi trong Promise.race:", error.message);
+    });
